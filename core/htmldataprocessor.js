@@ -157,10 +157,10 @@
 		 * If `null` is passed, then data will be parsed without context (as children of {@link CKEDITOR.htmlParser.fragment}).
 		 * See {@link CKEDITOR.htmlParser.fragment#fromHtml} for more details.
 		 * @param {Boolean} [fixForBody] Whether to trigger the auto paragraph for non-block contents.
-		 * @param {Boolean} [dontFilter] Do not filter data with {@link CKEDITOR.filter}.
+		 * @param {CKEDITOR.filter} [filter] Filter data with {@link CKEDITOR.filter}. Use `null` for the default filter.
 		 * @returns {String}
 		 */
-		toHtml: function( data, context, fixForBody, dontFilter ) {
+		toHtml: function( data, context, fixForBody, filter ) {
 			var editor = this.editor;
 
 			// Fall back to the editable as context if not specified.
@@ -171,7 +171,7 @@
 				dataValue: data,
 				context: context,
 				fixForBody: fixForBody,
-				dontFilter: !!dontFilter
+				filter: filter
 			} ).dataValue;
 		},
 
@@ -839,7 +839,7 @@
  * @param {String/CKEDITOR.htmlParser.fragment/CKEDITOR.htmlParser.element} data.dataValue Input data to be purified.
  * @param {String} data.context See {@link CKEDITOR.htmlDataProcessor#toHtml} The `context` argument.
  * @param {Boolean} data.fixForBody See {@link CKEDITOR.htmlDataProcessor#toHtml} The `fixForBody` argument.
- * @param {Boolean} data.dontFilter See {@link CKEDITOR.htmlDataProcessor#toHtml} The `dontFilter` argument.
+ * @param {CKEDITOR.filter} data.filter See {@link CKEDITOR.htmlDataProcessor#toHtml} The `filter` argument.
  */
 
 /**

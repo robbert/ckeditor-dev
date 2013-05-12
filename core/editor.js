@@ -351,6 +351,11 @@
 		editor.dataProcessor = new CKEDITOR.htmlDataProcessor( editor );
 		// Documented in filter.js
 		editor.filter = new CKEDITOR.filter( editor );
+		editor.bypassFilter = new CKEDITOR.filter( true );
+
+		if ( editor.config.allowedPasteContent != undefined )
+			editor.pasteFilter = new CKEDITOR.filter( editor.config.allowedPasteContent );
+
 		loadSkin( editor );
 	}
 

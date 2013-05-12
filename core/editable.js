@@ -964,11 +964,16 @@
 				// 		custom ranges and bypass native selections.
 				// TODO what should we do with others? Remove?
 				range = selection.getRanges()[ 0 ],
-				dontFilter = false;
+				filter = null;
 
 			if ( type == 'unfiltered_html' ) {
 				type = 'html';
-				dontFilter = true;
+				filter = editor.bypassFilter;
+			}
+			else if ( type == 'paste_html' ) {
+				type = 'html';
+				if ( editor.pasteFilter )
+					filter = editor.pasteFilter;
 			}
 
 			// Check range spans in non-editable.
@@ -984,7 +989,7 @@
 				// The "state" value.
 				that = {
 					type: type,
-					dontFilter: dontFilter,
+					filter: filter,
 					editable: editable,
 					editor: editor,
 					range: range,
@@ -1126,7 +1131,7 @@
 			// Process the inserted html, in context of the insertion root.
 			// Don't use the "fix for body" feature as auto paragraphing must
 			// be handled during insertion.
-			data = that.editor.dataProcessor.toHtml( data, null, false, that.dontFilter );
+			data = that.editor.dataProcessor.toHtml( data, null, false, that.filter );
 
 
 			// Build the node list for insertion.
