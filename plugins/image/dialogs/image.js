@@ -1,9 +1,9 @@
 ﻿/**
- * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.html or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 
-(function() {
+( function() {
 	var imageDialog = function( editor, dialogType ) {
 			// Load image preview.
 			var IMAGE = 1,
@@ -67,7 +67,7 @@
 				this.foreach( function( widget ) {
 					if ( widget.commit && widget.id != 'txtdlgGenStyle' )
 						widget.commit.apply( widget, args );
-				});
+				} );
 			}
 
 			// Avoid recursions.
@@ -194,14 +194,17 @@
 
 			var onImgLoadEvent = function() {
 					// Image is ready.
-					var original = this.originalElement;
+					var original = this.originalElement,
+						loader = CKEDITOR.document.getById( imagePreviewLoaderId );
+
 					original.setCustomData( 'isReady', 'true' );
 					original.removeListener( 'load', onImgLoadEvent );
 					original.removeListener( 'error', onImgLoadErrorEvent );
 					original.removeListener( 'abort', onImgLoadErrorEvent );
 
-					// Hide loader
-					CKEDITOR.document.getById( imagePreviewLoaderId ).setStyle( 'display', 'none' );
+					// Hide loader.
+					if ( loader )
+						loader.setStyle( 'display', 'none' );
 
 					// New image -> new domensions
 					if ( !this.dontResetSize )
@@ -218,7 +221,9 @@
 
 			var onImgLoadErrorEvent = function() {
 					// Error. Image is not loaded.
-					var original = this.originalElement;
+					var original = this.originalElement,
+						loader = CKEDITOR.document.getById( imagePreviewLoaderId );
+
 					original.removeListener( 'load', onImgLoadEvent );
 					original.removeListener( 'error', onImgLoadErrorEvent );
 					original.removeListener( 'abort', onImgLoadErrorEvent );
@@ -229,8 +234,10 @@
 					if ( this.preview )
 						this.preview.setAttribute( 'src', noimage );
 
-					// Hide loader
-					CKEDITOR.document.getById( imagePreviewLoaderId ).setStyle( 'display', 'none' );
+					// Hide loader.
+					if ( loader )
+						loader.setStyle( 'display', 'none' );
+
 					switchLockRatio( this, false ); // Unlock.
 				};
 
@@ -264,10 +271,13 @@
 					var editor = this.getParentEditor(),
 						sel = editor.getSelection(),
 						element = sel && sel.getSelectedElement(),
-						link = element && editor.elementPath( element ).contains( 'a', 1 );
+						link = element && editor.elementPath( element ).contains( 'a', 1 ),
+						loader = CKEDITOR.document.getById( imagePreviewLoaderId );
 
-					//Hide loader.
-					CKEDITOR.document.getById( imagePreviewLoaderId ).setStyle( 'display', 'none' );
+					// Hide loader.
+					if ( loader )
+						loader.setStyle( 'display', 'none' );
+
 					// Create the preview before setup the dialog contents.
 					previewPreloader = new CKEDITOR.dom.element( 'img', editor.document );
 					this.preview = CKEDITOR.document.getById( previewImageId );
@@ -299,7 +309,14 @@
 							this.setupContent( LINK, link );
 					}
 
-					if ( element && element.getName() == 'img' && !element.data( 'cke-realelement' ) || element && element.getName() == 'input' && element.getAttribute( 'type' ) == 'image' ) {
+					// Edit given image element instead the one from selection.
+					if ( this.customImageElement ) {
+						this.imageEditMode = 'img';
+						this.imageElement = this.customImageElement;
+						delete this.customImageElement;
+					}
+					else if ( element && element.getName() == 'img' && !element.data( 'cke-realelement' ) ||
+						element && element.getName() == 'input' && element.getAttribute( 'type' ) == 'image' ) {
 						this.imageEditMode = element.getName();
 						this.imageElement = element;
 					}
@@ -342,10 +359,10 @@
 							// Replace IMG -> INPUT
 							imgTagName = 'input';
 							this.imageElement = editor.document.createElement( 'input' );
-							this.imageElement.setAttributes({
+							this.imageElement.setAttributes( {
 								type: 'image',
 								alt: ''
-							});
+							} );
 							editor.insertElement( this.imageElement );
 						} else {
 							// Restore the original element before all commits.
@@ -457,10 +474,12 @@
 										dialog = this.getDialog();
 										var original = dialog.originalElement;
 
-										dialog.preview.removeStyle( 'display' );
+										if ( dialog.preview ) {
+											dialog.preview.removeStyle( 'display' );
+										}
 
 										original.setCustomData( 'isReady', 'false' );
-										// Show loader
+										// Show loader.
 										var loader = CKEDITOR.document.getById( imagePreviewLoaderId );
 										if ( loader )
 											loader.setStyle( 'display', '' );
@@ -470,10 +489,12 @@
 										original.on( 'abort', onImgLoadErrorEvent, dialog );
 										original.setAttribute( 'src', newUrl );
 
-										// Query the preloader to figure out the url impacted by based href.
-										previewPreloader.setAttribute( 'src', newUrl );
-										dialog.preview.setAttribute( 'src', previewPreloader.$.src );
-										updatePreview( dialog );
+										if ( dialog.preview ) {
+											// Query the preloader to figure out the url impacted by based href.
+											previewPreloader.setAttribute( 'src', newUrl );
+											dialog.preview.setAttribute( 'src', previewPreloader.$.src );
+											updatePreview( dialog );
+										}
 									}
 									// Dont show preview if no URL given.
 									else if ( dialog.preview ) {
@@ -509,7 +530,7 @@
 								id: 'browse',
 								// v-align with the 'txtUrl' field.
 								// TODO: We need something better than a fixed size here.
-								style: 'display:inline-block;margin-top:10px;',
+								style: 'display:inline-block;margin-top:14px;',
 								align: 'center',
 								label: editor.lang.common.browseServer,
 								hidden: true,
@@ -536,11 +557,11 @@
 							if ( type == IMAGE ) {
 								if ( this.getValue() || this.isChanged() )
 									element.setAttribute( 'alt', this.getValue() );
-							} else if ( type == PREVIEW ) {
+							} else if ( type == PREVIEW )
 								element.setAttribute( 'alt', this.getValue() );
-							} else if ( type == CLEANUP ) {
+							else if ( type == CLEANUP )
 								element.removeAttribute( 'alt' );
-							}
+
 						}
 					},
 						{
@@ -579,7 +600,7 @@
 										commit: function( type, element, internalCommit ) {
 											var value = this.getValue();
 											if ( type == IMAGE ) {
-												if ( value )
+												if ( value && editor.activeFilter.check( 'img{width,height}' ) )
 													element.setStyle( 'width', CKEDITOR.tools.cssLength( value ) );
 												else
 													element.removeStyle( 'width' );
@@ -619,7 +640,7 @@
 										commit: function( type, element, internalCommit ) {
 											var value = this.getValue();
 											if ( type == IMAGE ) {
-												if ( value )
+												if ( value && editor.activeFilter.check( 'img{width,height}' ) )
 													element.setStyle( 'height', CKEDITOR.tools.cssLength( value ) );
 												else
 													element.removeStyle( 'height' );
@@ -956,7 +977,7 @@
 						commit: function( type, element ) {
 							if ( type == LINK ) {
 								if ( this.getValue() || this.isChanged() ) {
-									var url = decodeURI( this.getValue() );
+									var url = this.getValue();
 									element.data( 'cke-saved-href', url );
 									element.setAttribute( 'href', url );
 
@@ -1146,11 +1167,11 @@
 								if ( type == IMAGE ) {
 									if ( this.getValue() || this.isChanged() )
 										element.setAttribute( 'title', this.getValue() );
-								} else if ( type == PREVIEW ) {
+								} else if ( type == PREVIEW )
 									element.setAttribute( 'title', this.getValue() );
-								} else if ( type == CLEANUP ) {
+								else if ( type == CLEANUP )
 									element.removeAttribute( 'title' );
-								}
+
 							}
 						}
 						]
@@ -1188,9 +1209,9 @@
 							updatePreview( this );
 						},
 						commit: function( type, element ) {
-							if ( type == IMAGE && ( this.getValue() || this.isChanged() ) ) {
+							if ( type == IMAGE && ( this.getValue() || this.isChanged() ) )
 								element.setAttribute( 'style', this.getValue() );
-							}
+
 						}
 					}
 					]
@@ -1201,9 +1222,9 @@
 
 	CKEDITOR.dialog.add( 'image', function( editor ) {
 		return imageDialog( editor, 'image' );
-	});
+	} );
 
 	CKEDITOR.dialog.add( 'imagebutton', function( editor ) {
 		return imageDialog( editor, 'imagebutton' );
-	});
-})();
+	} );
+} )();

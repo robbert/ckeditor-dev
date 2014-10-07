@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.html or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
  */
 CKEDITOR.dialog.add( 'select', function( editor ) {
 	// Add a new option to a SELECT object (combo or list).
@@ -65,7 +65,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 	function removeAllOptions( combo ) {
 		combo = getSelect( combo );
 		while ( combo.getChild( 0 ) && combo.getChild( 0 ).remove() ) {
-			/*jsl:pass*/
+
 		}
 	}
 	// Moves the selected option by a number of steps (also negative).
@@ -177,9 +177,9 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 				setup: function( name, element ) {
 					if ( name == 'clear' )
 						this.setValue( this[ 'default' ] || '' );
-					else if ( name == 'select' ) {
+					else if ( name == 'select' )
 						this.setValue( element.data( 'cke-saved-name' ) || element.getAttribute( 'name' ) || '' );
-					}
+
 				},
 				commit: function( element ) {
 					if ( this.getValue() )
@@ -500,4 +500,4 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 		}
 		]
 	};
-});
+} );
