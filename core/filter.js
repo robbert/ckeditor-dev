@@ -147,12 +147,7 @@
 			// Add element filter before htmlDataProcessor.dataFilter
 			// when purifying input data to correct html.
 			this._.toHtmlListener = editor.on( 'toHtml', function( evt ) {
-				var filter = this;
-
-				if ( evt.data.filter instanceof CKEDITOR.filter )
-					filter = evt.data.filter;
-
-				if ( filter.applyTo( evt.data.dataValue, true, false ) )
+				if ( this.applyTo( evt.data.dataValue, true, evt.data.dontFilter ) )
 					editor.fire( 'dataFiltered' );
 			}, this, null, 6 );
 
@@ -165,12 +160,6 @@
 		}
 		// Rules object passed in editorOrRules argument - initialize standalone filter.
 		else {
-			// Disable filter completely by specifying editorOrRules = true.
-			if ( editorOrRules === true ) {
-				this.disabled = true;
-				return;
-			}
-
 			this.customConfig = false;
 			this.allow( editorOrRules, 'default', 1 );
 		}

@@ -211,13 +211,9 @@
 			// Inserts processed data into the editor at the end of the
 			// events chain.
 			editor.on( 'paste', function( evt ) {
-				var data = evt.data,
-					type = data.type;
+				var data = evt.data;
 
-				if ( type == 'html' )
-					type = 'paste_html';
-
-				editor.insertHtml( data.dataValue, type );
+				editor.insertHtml( data.dataValue, data.type );
 
 				// Deferr 'afterPaste' so all other listeners for 'paste' will be fired first.
 				setTimeout( function() {
