@@ -392,6 +392,10 @@
 
 		// Set activeFilter directly to avoid firing event.
 		editor.filter = editor.activeFilter = new CKEDITOR.filter( editor );
+		editor.bypassFilter = new CKEDITOR.filter( true );
+
+		if ( editor.config.allowedPasteContent != undefined )
+			editor.pasteFilter = new CKEDITOR.filter( editor.config.allowedPasteContent );
 
 		loadSkin( editor );
 	}

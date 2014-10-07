@@ -189,6 +189,12 @@
 		}
 		// Rules object passed in editorOrRules argument - initialize standalone filter.
 		else {
+			// Disable filter completely by specifying editorOrRules = true.
+			if ( editorOrRules === true ) {
+				this.disabled = true;
+				return;
+			}
+
 			this.customConfig = false;
 			this.allow( editorOrRules, 'default', 1 );
 		}

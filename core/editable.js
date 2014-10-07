@@ -1194,11 +1194,16 @@
 				// 		custom ranges and bypass native selections.
 				// TODO what should we do with others? Remove?
 				range = selection.getRanges()[ 0 ],
-				dontFilter = false;
+				filter = null;
 
 			if ( type == 'unfiltered_html' ) {
 				type = 'html';
-				dontFilter = true;
+				filter = editor.bypassFilter;
+			}
+			else if ( type == 'paste_html' ) {
+				type = 'html';
+				if ( editor.pasteFilter )
+					filter = editor.pasteFilter;
 			}
 
 			// Check range spans in non-editable.
@@ -1214,7 +1219,7 @@
 				// The "state" value.
 				that = {
 					type: type,
-					dontFilter: dontFilter,
+					filter: filter,
 					editable: editable,
 					editor: editor,
 					range: range,
@@ -1361,7 +1366,7 @@
 				fixForBody: false,
 				dontFilter: that.dontFilter,
 				// Use the current, contextual settings.
-				filter: that.editor.activeFilter,
+				filter: that.filter || that.editor.activeFilter,
 				enterMode: that.editor.activeEnterMode
 			} );
 
